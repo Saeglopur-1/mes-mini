@@ -1,0 +1,45 @@
+:root {
+  --bg: #0f1216;
+  --panel: #151a21;
+  --panel-2: #0c0f13;
+  --border: #2a313b;
+  --text: #e6e9ee;
+  --muted: #9aa3ad;
+}
+
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.el-table, .el-input__wrapper, .el-select__wrapper, .el-button, .el-dialog {
+  --el-border-color: var(--border);
+}
+
+.el-table {
+  --el-table-header-bg-color: var(--panel-2);
+  --el-table-tr-bg-color: var(--panel);
+  --el-table-border-color: var(--border);
+  --el-text-color-primary: var(--text);
+  --el-text-color-regular: var(--text);
+}
+
+.el-dialog__header, .el-dialog__body {
+  background: var(--panel);
+  color: var(--text);
+}
+
+.el-form-item__label, .el-pagination__total {
+  color: var(--muted);
+}
