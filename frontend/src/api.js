@@ -3,11 +3,9 @@ const KEY = "mes_demo_v1";
 function read() {
   return JSON.parse(localStorage.getItem(KEY) || "{}");
 }
-
 function write(db) {
   localStorage.setItem(KEY, JSON.stringify(db));
 }
-
 function ensure() {
   const db = read();
   db.tasks ??= [];
@@ -18,17 +16,15 @@ function ensure() {
   write(db);
   return db;
 }
-
 function uid() {
   return Date.now().toString() + Math.random().toString(16).slice(2);
 }
 
-export default {
+export const api = {
   async get(url) {
     const table = url.replace("/api/", "");
     return { data: ensure()[table] };
   },
-
   async post(url, payload) {
     const table = url.replace("/api/", "");
     const db = ensure();
@@ -37,7 +33,6 @@ export default {
     write(db);
     return { data: row };
   },
-
   async put(url, payload) {
     const [_, table, id] = url.split("/");
     const db = ensure();
@@ -48,7 +43,6 @@ export default {
     }
     return { data: db[table][index] };
   },
-
   async delete(url) {
     const [_, table, id] = url.split("/");
     const db = ensure();
@@ -57,3 +51,6 @@ export default {
     return { data: true };
   }
 };
+
+export default api;
+
