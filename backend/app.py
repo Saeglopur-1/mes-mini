@@ -365,6 +365,21 @@ def create_app():
         db.session.add(StockMove(material_id=material_id, qty=-qty, move_type="OUT", ref_type="TASK", ref_id=t.task_no))
         db.session.commit()
         return jsonify({"inventory": inv.to_dict(), "requirement": req.to_dict()})
+    
+    @app.delete("/api/tasks/<int:task_id>")
+    def delete_task(task_id):
+        task = Task.query.get_or_404(task_id)
+        # 如果任务是进行中，将模具状态改回空闲
+        if task.status == "进行中":
+            mold = Mold.query.get(task.mold_id)
+            if mold and mold.status == "使用中":
+                mold.status = "空闲"
+        # 删除关联的用料需求（如果有外键级联可省略）
+        TaskMaterialRequirement.query.filter_by(task_id=task.id).delete()
+        db.session.delete(task)
+        db.session.commit()
+        return "", 204
+
 
     # =========================
     # Phase 1: Mobile report
