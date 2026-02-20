@@ -81,6 +81,12 @@
             </el-button>
           </template>
         </el-table-column>
+
+        <el-table-column label="操作" width="120" fixed="right">
+          <template #default="{ row }">
+            <el-button size="small" type="danger" @click="remove(row)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <div class="muted tip">
@@ -148,7 +154,7 @@
 <script setup>
 import { reactive, ref, onMounted, computed } from "vue";
 import { api } from "../api";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 const molds = ref([]);
 const products = ref([]);
@@ -195,6 +201,25 @@ async function createTask() {
     await reloadAll();
   } catch (e) {
     ElMessage.error(e?.response?.data?.error || "创建失败");
+  }
+}
+
+// 添加 remove 函数
+async function remove(row) {
+  try {
+    await ElMessageBox.confirm(
+      `确认删除任务单号“${row.task_no}”吗？此操作不可恢复。`,
+      "危险操作",
+      { type: "warning", confirmButtonText: "确认删除", cancelButtonText: "取消" }
+    );
+    await api.delete(`/tasks/${row.id}`);
+    ElMessage.success("已删除");
+    await loadTasks(); // 刷新列表
+  } catch (error) {
+    if (error !== 'cancel') {
+      console.error('删除失败', error);
+      ElMessage.error("删除失败，请重试");
+    }
   }
 }
 

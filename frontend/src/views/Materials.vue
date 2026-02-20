@@ -71,6 +71,7 @@ function openEdit(row) {
 }
 
 async function save() {
+  console.log('🚀 save 函数执行了', editingId.value, JSON.stringify(form));
   try {
     if (editingId.value) await api.put(`/materials/${editingId.value}`, form);
     else await api.post("/materials", form);

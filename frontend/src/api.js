@@ -1,56 +1,34 @@
-const KEY = "mes_demo_v1";
+import axios from 'axios';
 
-function read() {
-  return JSON.parse(localStorage.getItem(KEY) || "{}");
-}
-function write(db) {
-  localStorage.setItem(KEY, JSON.stringify(db));
-}
-function ensure() {
-  const db = read();
-  db.tasks ??= [];
-  db.molds ??= [];
-  db.materials ??= [];
-  db.products ??= [];
-  db.inventory ??= [];
-  write(db);
-  return db;
-}
-function uid() {
-  return Date.now().toString() + Math.random().toString(16).slice(2);
-}
+// 创建 axios 实例，配置基础 URL
+const apiClient = axios.create({
+  baseURL: 'http://192.168.31.129:5001/api',  // 你的后端地址
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json' }
+});
+
+// 你可以在这里添加拦截器（比如统一错误处理）
+apiClient.interceptors.response.use(
+  response => response,
+  error => {
+    console.error('API 请求错误:', error);
+    return Promise.reject(error);
+  }
+);
 
 export const api = {
   async get(url) {
-    const table = url.replace("/api/", "");
-    return { data: ensure()[table] };
+    return apiClient.get(url);
   },
-  async post(url, payload) {
-    const table = url.replace("/api/", "");
-    const db = ensure();
-    const row = { id: uid(), ...payload };
-    db[table].unshift(row);
-    write(db);
-    return { data: row };
+  async post(url, data) {
+    return apiClient.post(url, data);
   },
-  async put(url, payload) {
-    const [_, table, id] = url.split("/");
-    const db = ensure();
-    const index = db[table].findIndex(i => i.id === id);
-    if (index !== -1) {
-      db[table][index] = { ...db[table][index], ...payload };
-      write(db);
-    }
-    return { data: db[table][index] };
+  async put(url, data) {
+    return apiClient.put(url, data);
   },
   async delete(url) {
-    const [_, table, id] = url.split("/");
-    const db = ensure();
-    db[table] = db[table].filter(i => i.id !== id);
-    write(db);
-    return { data: true };
+    return apiClient.delete(url);
   }
 };
 
 export default api;
-
